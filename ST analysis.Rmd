@@ -1,0 +1,54 @@
+
+```{r}
+#load packages
+library(tidyverse)
+library(dplyr)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+metadata <- read.csv("C:/Users/goodm/Downloads/Meta Data with ST taxa.csv")
+
+View(metadata)
+
+metadata = separate(metadata, tip.ID, into = c("tree", "storage", "tip"), sep = "-")
+metadata = select (metadata, (!(c(X, X.1))))
+
+#only sequenced data
+md.seqd = filter(metadata, metadata$Sequencing == "1")
+
+```{r md.seq}
+# look at each tree's taxa
+tree1 = filter(md.seqd, md.seqd$tree == "1")
+select(tree1, sciName)
+
+tree2 = filter(md.seqd, md.seqd$tree == "2")
+select(tree2, sciName)
+
+tree3 = filter(md.seqd, md.seqd$tree == "3")
+select(tree3, sciName)
+```
+
+
+
+
+# how many unique fungi did we get?
+
+all.taxa = unique(md.seqd$sciName)
+length(all.taxa)
+
+```{r md.seqd}
+
+# see if sciName lines up with morphotype
+
+morphos = select(md.seqd, c(sciName, storage, tree, mycorrhiza.confidence., color, branching, swelling, original.morphotype.class, notes, field.picked.lab.picked, tip))
+
+morphos[order(morphos$sciName),]
+
+morphos1 = morphos[order(morphos$sciName),]
+
+
+```
+
