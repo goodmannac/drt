@@ -1,0 +1,86 @@
+---
+title: "joiningMeta_LT_gels"
+output: html_document
+date: "2024-08-06"
+---
+#Welcome packages into the script
+library(tidyr)
+library(dplyr)
+
+```{r}
+#Setup
+library(readr)
+metadata <- read.csv("~/Desktop/Bogar Lab/tips.only.metadataLT.csv")
+library(readr)
+DRTLTgels <- read.csv("~/Desktop/Bogar Lab/Dry Root Gels/DRTLTgels.csv")
+```
+
+```{r}
+#Set up DRTLTgels 
+
+gels.noLad = filter(DRTLTgels, DRTLTgels$comment != "LADDER")
+GelsPCRaddress = gels.noLad %>%unite("PCR.address", 7:8, sep = "-")
+
+#Pos and neg control 
+GelsPCRaddress [59, 7] = "gel 1 pos control"
+GelsPCRaddress [60, 7] = "gel 1 neg control"
+GelsPCRaddress [116, 7] = "gel 2 pos control"
+GelsPCRaddress [117, 7] = "gel 2 neg control"
+```
+
+```{r}
+#Set up metadata
+metadataPCRaddress = metadata %>%unite("PCR.address", 13:14, sep = "-")
+LTmetadata = metadataPCRaddress %>%unite("tip.ID", 1:3, sep = "-")
+
+#remove excess 1,000 entries
+LTmetadata = LTmetadata [1:123,]
+```
+
+```{r}
+#Merge metadata and gels
+
+LTmetadata_gels = full_join(LTmetadata, GelsPCRaddress, by = "PCR.address")
+
+LTmetadata_gels_tidy = filter(LTmetadata_gels, LTmetadata_gels$PCR.address != "NA" & LTmetadata_gels$PCR.address != "13-D" & LTmetadata_gels$PCR.address != "10-F")
+```
+
+
+```{r}
+#filter for gels with only 1 band
+
+LTmetadata_gels_bands.only = filter(LTmetadata_gels_tidy, LTmetadata_gels_tidy$numBands == 1)
+```
+
+
+```{r}
+write.csv(LTmetadata_gels_tidy, "~/Desktop/Bogar Lab/metadataLT_gels_tidy.csv")
+write.csv(LTmetadata_gels_bands.only, "~/Desktop/Bogar Lab/metadataLT_gels_bands.only.csv")
+```
+
+
+
+
+
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
